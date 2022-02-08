@@ -2,6 +2,8 @@
 
 ## App Creation
 
+https://pianoanalysis.gatsbyjs.io
+
 Progressive Web App:
 
 * webapp that can be installable and act like an app
@@ -17,11 +19,15 @@ Recharts
 
 * https://recharts.org/en-US/
 
+Burger menu
+
+* https://www.npmjs.com/package/react-burger-menu
 
 
-Chrom devtools
 
-* Can be helpful
+
+
+
 
 Random tech stack:
 

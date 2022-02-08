@@ -595,3 +595,56 @@ pre tt:after {
     font-size: 100%;
   }
 }
+
+/* ------------------------------------------- */
+/* My stuff */
+/* .flex-grid {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+} */
+
+.col {
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.col-flex{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.col-flex-child {
+  flex: 1;
+}
+
+
+/* Page Layout */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.wrapper > * {
+  padding: 20px;
+} 
+.page-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 350px;
+  /* background: var(--main-purple-color) url(IMG_SRC) no-repeat center / cover; */
+  /* background-blend-mode: luminosity; */
+  /* color: var(--main-white-color); */
+}
+/* Here incase I want to use it someday */
+.page-footer {
+  height: 0px;
+}
