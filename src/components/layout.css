@@ -1,7 +1,18 @@
+/* CREATED BY GATSBY
+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+/* Some things changed, e.g font*/
+@import url("https://fonts.googleapis.com/css?family=Dosis:400,700");
+/* body {
+  font: 16px/1.5 
+} */
+:root {
+  --main-font: "Dosis", sans-serif;
+}
+
 html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-  font: 112.5%/1.45em georgia, serif, sans-serif;
+  font: 112.5%/1.45em var(--main-font);
   box-sizing: border-box;
   overflow-y: scroll;
 }
@@ -10,7 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: hsla(0, 0%, 0%, 0.8);
-  font-family: georgia, serif;
+  font-family: var(--main-font);;
   font-weight: normal;
   word-wrap: break-word;
   font-kerning: normal;
@@ -79,14 +90,14 @@ h1 {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.45rem;
+  margin-bottom: 0.25rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
-  font-size: 2.25rem;
+  font-size: 1.25rem;
   line-height: 1.1;
+  text-align: center;
 }
 mark {
   background-color: #ff0;
@@ -260,8 +271,7 @@ h2 {
   padding-top: 0;
   margin-bottom: 1.45rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 1.62671rem;
@@ -277,8 +287,7 @@ h3 {
   padding-top: 0;
   margin-bottom: 1.45rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 1.38316rem;
@@ -294,8 +303,7 @@ h4 {
   padding-top: 0;
   margin-bottom: 1.45rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 1rem;
@@ -311,8 +319,7 @@ h5 {
   padding-top: 0;
   margin-bottom: 1.45rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 0.85028rem;
@@ -328,8 +335,7 @@ h6 {
   padding-top: 0;
   margin-bottom: 1.45rem;
   color: inherit;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--main-font);;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 0.78405rem;
@@ -596,36 +602,28 @@ pre tt:after {
   }
 }
 
-/* ------------------------------------------- */
-/* My stuff */
-/* .flex-grid {
+
+/* MY CSS
+–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+/* HOME PAGE LAYOUT
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+.home-flex {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-} */
-
-.col {
-  flex: 1;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
+  min-height: 100vh;
   justify-content: center;
-}
-
-.col-flex{
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.col-flex-child {
-  flex: 1;
+  align-items: center;
 }
 
 
-/* Page Layout */
+/* FUNCTION PAGE LAYOUT
+––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+/* WRAPPER
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -634,6 +632,30 @@ pre tt:after {
 .wrapper > * {
   padding: 20px;
 } 
+
+/* HEADER
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.page-header {
+  background-color: #F19D54;
+}
+
+.page-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header .cta-contact {
+  font-family: inherit;
+  font-size: 1.2rem;
+  padding: 5px 18px;
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+/* CONTENT
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
 .page-main {
   flex-grow: 1;
   display: flex;
@@ -644,7 +666,37 @@ pre tt:after {
   /* background-blend-mode: luminosity; */
   /* color: var(--main-white-color); */
 }
+
+/* FOOTER
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
 /* Here incase I want to use it someday */
-.page-footer {
+/* .page-footer {
   height: 0px;
+} */
+
+/* GRID LAYOUT
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.col {
+  flex: 1;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.row-fixedheight {
+  display: flex;
+  flex-direction: row;
+  align-items: right;
+}
+
+.col-flex{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.col-flex-child {
+  flex: 1;
 }

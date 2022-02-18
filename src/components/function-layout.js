@@ -10,9 +10,9 @@ const FunctionLayout = ({ title, children }) => {
         <main class="page-main">
             {children}
         </main>
-        <footer class="page-footer">
+        {/* <footer class="page-footer">
           <></>
-        </footer>
+        </footer> */}
       </div>
     )
 }

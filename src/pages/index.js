@@ -1,6 +1,9 @@
-import * as React from "react"
-import { useState, useEffect } from "react"
-import { Link } from "gatsby"
+import React from "react"
+import { useState } from "react"
+import { Link, navigate } from "gatsby"
+import Form from "react-bootstrap/Form"
+import Button from "react-bootstrap/Button"
+import ButtonGroup from "react-bootstrap/ButtonGroup"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
@@ -8,70 +11,89 @@ import Seo from "../components/seo"
 // TODO: Global variables are bad, but I failed to pass through state parameter in link so works for now
 export let midiInput = null
 
-function onMIDISuccess( midiAccess ) {
-  console.log(midiAccess)
-  if ( midiAccess.inputs.size == 0 ) {
-    console.log("No MIDI Input")
-    return null
-  } else {
-    console.log("MIDI Input exists")
-    // TODO: Should use midiAccess.inputs.get('value') where value (e.g 1951924834) is found from input.id and chosen by the user from among the list of possible inputs
-    // console.log(midiAccess.inputs.get('1951924834'))
-    const first = midiAccess.inputs.entries().next().value
-    midiInput = first[1]
-    return midiInput
-  }
-}
 
 function onMIDIFailure(msg) {
   console.log( "Failed to get MIDI access - " + msg );
 }
 
-function listInputsAndOutputs( midiAccess ) {
-  if ( midiAccess == "Loading" ) {
+function getMidiDevices( midiAccess ) {
+  if ( midiAccess === "Loading" ) {
     return "No midi inputs"
   } else {
     let inputs = []
     for (let entry of midiAccess.inputs) {
       let input = entry[1];
-      // console.log( "Input port [type:'" + input.type + "'] id:'" + input.id +
-      //   "' manufacturer:'" + input.manufacturer + "' name:'" + input.name +
-      //   "' version:'" + input.version + "'" );
-      inputs.push(input.name)
+      inputs.push({"name": input.name, "id": input.id})
+      console.log(input.id)
     }
     return inputs
   }
 }
 
-function getMidiName( input ) {
-  if ( input == "Loading" ) {
-    return "Loading"
-  } else {
-    return input.name
-  }
-}
-
 const IndexPage = () => {
-  const [midi, setMidi] = useState("Loading");
-  const [input, setInput] = useState("Loading");
+  const [midiAccess, setMidiAccess] = useState(null)
+  const [devices, setDevices] = useState([])
+  const [inputChosen, setInputChosen] = useState(false)
+
+  navigator.requestMIDIAccess().then( ( access ) => {
+    if ( midiAccess == null ) {
+      setMidiAccess(access)
+      setDevices(getMidiDevices( access ))
+    }
+  }, onMIDIFailure)
+
+  function updateMidiDevices() {
+    setDevices(getMidiDevices( midiAccess ))
+  }
+
+  const selectMidiDevice = (e) => {
+    let id = e.target.value
+    console.log(id)
+    if ( midiAccess.inputs.size === 0 ) {
+      console.log("No MIDI Input")
+    } else {
+      let newInput = midiAccess.inputs.get(id)
+      midiInput = newInput // TODO: Don't use global variables
+      setInputChosen(true)
+    }
+  }
   
-  useEffect(() => { 
-    // TODO: think this keeps getting called... should put it somewhere that get's called once
-    navigator.requestMIDIAccess().then( ( midi ) => {
-      const newInput = onMIDISuccess(midi)
-      setInput(newInput)
-      setMidi(midi)
-    }, onMIDIFailure)
-  }, [])
-  
-  return <Layout title="Piano Analysis">
-    <Seo title="Home" />
-    <p>Possible Midi connections: { listInputsAndOutputs( midi ) }</p>
-    <p>Chosen midi input: { getMidiName( input ) } </p>
-    <p>
-      <Link to="/exercise-analysis">Exercise Analysis</Link> <br />
-    </p>
-  </Layout>
+  return (
+    <div class="home-flex">
+      <h1>Piano Analysis</h1>
+      <p>10x your playing</p>
+      <p>Select your midi device</p>
+      <Seo title="Home" />
+      <Form.Select 
+        aria-label="Default select example"
+        onChange={selectMidiDevice}>
+        <option>Select Midi Device</option>
+        {devices.map( device => (
+            <option value={device.id}>{device.name}</option>
+        ))}
+      </Form.Select>
+      {inputChosen ? (
+        <div>
+        <p>And choose what to analyse</p>
+        <ButtonGroup aria-label="Basic example" vertical>
+          <Button variant="outline-primary" onClick={() => navigate("/exercise-analysis")}>Exercises</Button>
+          <Button variant="outline-primary" onClick={() => navigate("/")}>(Pedaling)</Button>
+          <Button variant="outline-primary" onClick={() => navigate("/")}>(Chords)</Button>
+          <Button variant="outline-primary" onClick={() => navigate("/")}>(Pieces)</Button>
+        </ButtonGroup>
+        </div>
+      ) : (
+        <div></div>
+      )
+      }
+    </div>
+  )
 }
 
 export default IndexPage
+
+  /*
+  TODO: 
+    Handle no devices connected
+    Add refresh button
+  */

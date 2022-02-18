@@ -7,6 +7,8 @@ export function updatePlayedNotes( rawMessage, played ) {
     Does....
     Input:
     Return:
+    Notes:
+        Doesn't handle pedal press events
     */
 
     const data = Array.from(rawMessage.data) // 'midi-message-parser' doesn't work with Uint8Array
@@ -34,7 +36,6 @@ export function updatePlayedNotes( rawMessage, played ) {
         }
         played.push(newNote)
     } else if ( message.type == MessageTypes.NOTE_OFF ) {
-        console.log(rawMessage)
         for (let i = played.length-1; i >= 0; i-- ) {
             if ( played[i].note == getAbsoluteNote(message.number) && played[i].endTime == null ) {
                 played[i].endTime = message.timestamp
@@ -49,12 +50,52 @@ export function updatePlayedNotes( rawMessage, played ) {
 }
 
 
-export function extractExerciseAnalysisData( played ) {
+export function updateExerciseAnalysisData( exerciseAnalysisData, played ) {
     /*
     Does....
     Input:
     Return:
     */
+
+    // TODO finish this funciton
+    // * Doesn't work if notes aren't stacato, 
+
+
+    let data = exerciseAnalysisData
+    let noteData = played.at(-1)
+
+    if ( noteData.endTime == null ) { // => NoteOn
+        if ( played.length > 1 ) { // => => Can update interval
+            let previousNoteData = played.at(-2)
+            let interval = noteData.startTime - previousNoteData.endTime
+            data = {
+                "velocityOn":   [...data.velocityOn,  {"note": noteData.note, "value": noteData.velocityOn} ],
+                "velocityOff":  [...data.velocityOff],
+                "intervals":    [...data.intervals,   {"note": previousNoteData.note, "value": interval}],
+                "durations":    [...data.durations],
+            }
+        } else { // simply update velocityOn as first note
+            data = {
+                "velocityOn":   [...data.velocityOn,  {"note": noteData.note, "value": noteData.velocityOn} ],
+                "velocityOff":  [...data.velocityOff],
+                "intervals":    [...data.intervals],
+                "durations":    [...data.durations],
+            }
+        }
+    } else { // => NoteOff => Can update duration
+        let duration = noteData.endTime - noteData.startTime
+        data = {
+            "velocityOn":   [...data.velocityOn],
+            "velocityOff":  [...data.velocityOff, {"note": noteData.note, "value": noteData.velocityOff} ],
+            "intervals":    [...data.intervals],
+            "durations":    [...data.durations,   {"note": noteData.note, "value": duration} ],
+        }
+    }
+    
+    return data
+}
+
+export function extractExerciseAnalysisData( played ) {
 
     let notes =         played.map(function (e) { return e.note })
     let velocityOn =    played.map(function (e) { return e.velocityOn })
@@ -65,16 +106,17 @@ export function extractExerciseAnalysisData( played ) {
     let durations =     endTimes.map((v, i) => v - startTimes[i])
     
     let data = {
-        "velocityOn":   notes.map(function(e, i) { return {"note": e, "velocity": velocityOn[i]} }),
-        "velocityOff":  notes.map(function(e, i) { return {"note": e, "velocity": velocityOff[i]} }),
-        "intervals":    notes.map(function(e, i) { return {"note": e, "velocity": intervals[i]} }),
-        "durations":    notes.slice(0,-1).map(function(e, i) { return {"note": e, "velocity": durations[i]} }),
+        "velocityOn":   notes.map(function(e, i) { return {"note": e, "value": velocityOn[i]} }),
+        "velocityOff":  notes.map(function(e, i) { return {"note": e, "value": velocityOff[i]} }),
+        "intervals":    notes.map(function(e, i) { return {"note": e, "value": intervals[i]} }),
+        "durations":    notes.slice(0,-1).map(function(e, i) { return {"note": e, "value": durations[i]} }),
     }
 
     console.log(data)
 
     return data
 }
+
 
 const absoluteNotes = ["A0","A#0","B0",
                 "C1","C#1","D1","D#1","E1","F1","F#1","G1","G#1","A1","A#1","B1",

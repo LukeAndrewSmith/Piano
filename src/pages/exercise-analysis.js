@@ -1,96 +1,102 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { Link } from "gatsby"
+import Dropdown from "react-bootstrap/Dropdown"
+import DropdownButton from "react-bootstrap/DropdownButton"
+import Col from "react-bootstrap/Col"
+import Form from "react-bootstrap/Form"
 
-import Layout from "../components/layout"
 import FunctionLayout from "../components/function-layout"
 import Seo from "../components/seo"
-import { DynamicLineChart, ChartLayout } from "../components/charts"
+import { ChartLayout } from "../components/charts"
 
-import { updatePlayedNotes, extractExerciseAnalysisData } from "../midi-analysis/midi-analysis"
+import { updatePlayedNotes, updateExerciseAnalysisData, extractExerciseAnalysisData } from "../midi-analysis/midi-analysis"
 
 import { midiInput } from './index';
 
 
+function getChartData(exerciseData, graphs) {
+  let titles = ["Velocity On", "Velocity Off", "Durations", "Intervals"]
+  let data = [exerciseData.velocityOn, exerciseData.velocityOff, exerciseData.durations, exerciseData.intervals]
+  let chartData = [[],[]]
+  for ( let i=0; i<graphs.length; i++ ) {
+    if ( graphs[i] ) {
+      chartData[0].push(data[i])
+      chartData[1].push(titles[i])
+    }
+  }
+  return chartData
+}
+
 const Exercise_Analysis = () => {
-
-  const [exerciseData, setExerciseData] = useState({
-    "velocityOn":   [],
-    "velocityOff":  [],
-    "intervals":    [],
-    "durations":    [],
-  })
-
-  let played = []
-  let exerciseDataLocal = {
+  let [played, setPlayed] = useState([])
+  let [graphs, setGraphs] = useState([true,true,true,true])
+  let initExerciseData = {
     "velocityOn":   [],
     "velocityOff":  [],
     "intervals":    [],
     "durations":    [],
   }
+  let [exerciseData, setExerciseData] = useState(initExerciseData)
 
-  useEffect(() => {
-    console.log(midiInput)
-    midiInput.onmidimessage = ( message ) => {
-      console.log(message)
-      played = updatePlayedNotes(message,played)
-      exerciseDataLocal = extractExerciseAnalysisData(played) // TODO: this is not efficient, should simply update the existing array if slow
-      setExerciseData(exerciseDataLocal)
+  const onSelectedOptionsChange = (e) => {
+    let newGraphs = [...graphs]
+    newGraphs[e.target.id] = !newGraphs[e.target.id]
+    setGraphs(newGraphs)
+  }
+
+  midiInput.onmidimessage = ( message ) => {
+    let playedNew = updatePlayedNotes(message,played)
+    // let exerciseDataNew = updateExerciseAnalysisData(exerciseData,playedNew) // TODO: this is not efficient, should simply update the existing array if slow
+    let exerciseDataNew = extractExerciseAnalysisData(playedNew) // TODO: this is not efficient, should simply update the existing array if slow
+    if ( exerciseDataNew.intervals.length > 1 ) {
+      for (let i=exerciseDataNew.intervals.length-1; i>=0; i--) {
+        if ( exerciseDataNew.intervals[i].value > 1000 ) { // TODO: let the user decide the interval
+          playedNew = updatePlayedNotes(message,[])
+          // exerciseDataNew = updateExerciseAnalysisData(initExerciseData,playedNew)
+          exerciseDataNew = extractExerciseAnalysisData(playedNew)
+          break
+        }
+      }
     }
-  }, [])
+    setPlayed(playedNew)
+    setExerciseData(exerciseDataNew)
+  }
+
+  // const [options, setOptions] = useState([{id:0,name:'Velocity On',selected:true},{id:1,name:'Velocity Off',selected:true},{id:2,name:'Duration',selected:true},{id:3,name:'Intervals',selected:true}])
+  const options = [{id:'0',name:'Velocity On',selected:true},{id:'1',name:'Velocity Off',selected:true},{id:'2',name:'Duration',selected:true},{id:'3',name:'Intervals',selected:true}]
 
   return (
-  // <Layout title="Exercise Analysis">
-  //   <Seo title="Exercise Analysis" />
-  //   <div class='parent flex-parent'>
-  //     <div class='child flex-child'>
-  //       <h1>Velocity On</h1>
-  //       <DynamicLineChart data={ exerciseData.velocityOn } title={"dd"}></DynamicLineChart>
-  //     </div>
-  //     <div class='child flex-child'>
-  //       <h1>Velocity Off</h1>
-  //       <DynamicLineChart data={ exerciseData.velocityOff }></DynamicLineChart>
-  //     </div>
-  //     <div class='child flex-child'>
-  //       <h1>Intervals</h1>
-  //       <DynamicLineChart data={ exerciseData.intervals }></DynamicLineChart>
-  //     </div>
-  //     <div class='child flex-child'>
-  //       <h1>Durations</h1>
-  //       <DynamicLineChart data={ exerciseData.durations }></DynamicLineChart>
-  //     </div>
-  //   </div>    
-  //   <Link to="/">Go back to the homepage</Link>
-  // </Layout>
-  // Testing other layouts
-  // <Layout title="Exercise Analysis">
-  //   <div class='parent flex-parent'>
-  //     <div class='child flex-child'>
-  //       <h1>Velocity On</h1>
-  //       <DynamicLineChart data={ exerciseData.velocityOn } title={"dd"}></DynamicLineChart>
-  //     </div>
-  //     <div class='child flex-child'>
-  //       <h1>Velocity Off</h1>
-  //       <DynamicLineChart data={ exerciseData.velocityOff }></DynamicLineChart>
-  //     </div>
-  //   </div>
-  //   <div class='parent flex-parent'>
-  //     <div class='child flex-child'>
-  //       <h1>Intervals</h1>
-  //       <DynamicLineChart data={ exerciseData.intervals }></DynamicLineChart>
-  //     </div>
-  //     <div class='child flex-child'>
-  //       <h1>Durations</h1>
-  //       <DynamicLineChart data={ exerciseData.durations }></DynamicLineChart>
-  //     </div>
-  //   </div>  
-  // </Layout>
   <FunctionLayout title="Exercise Analysis">
-    <ChartLayout exerciseData={exerciseData}></ChartLayout>
+    {/* <Multiselect 
+      // data={multiSelectState} 
+      data={[{value:'0',label:'Velocity On',selected:true},{value:'1',label:'Velocity Off',selected:true},{value:'2',label:'Duration',selected:true},{value:'3',label:'Intervals',selected:true}]}
+      onChange={handleChange}  
+      multiple
+      buttonText={function(options, select) {return "Graphs"}} 
+    /> */}
+    <DropdownButton
+    alignRight
+    title="Graphs"
+    id="dropdown-menu-align-right"
+    // onSelect={handleSelect}
+    >
+      {options.map(options => (
+        <Dropdown.ItemText>
+          <Form.Check
+              type="checkbox"
+              id={options.id}
+              name={options.name}
+              label={options.name}
+              defaultChecked={options.selected}
+              onChange={onSelectedOptionsChange}
+          />
+        </Dropdown.ItemText>
+      ))}
+    </DropdownButton>
+
+    <ChartLayout chartData={getChartData(exerciseData, graphs)}></ChartLayout>
   </FunctionLayout>
   )
 }
-
-
 
 export default Exercise_Analysis
