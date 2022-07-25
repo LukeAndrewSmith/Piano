@@ -3,14 +3,12 @@ import Header from "./header"
 
 const FunctionLayout = ({ title, children }) => {
     return (
-      <div class="wrapper">
-        <header class="page-header">
-            <Header title={title}></Header>
-        </header>
-        <main class="page-main">
+      <div className="wrapper">
+        <Header title={title}></Header>
+        <main className="page-main">
             {children}
         </main>
-        {/* <footer class="page-footer">
+        {/* <footer className="page-footer">
           <></>
         </footer> */}
       </div>

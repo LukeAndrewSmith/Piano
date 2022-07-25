@@ -10,89 +10,89 @@ import {
   Bar,
 } from 'recharts';
 
-const ChartLayout4 = ({ data, title }) => {
-    let [data1, data2, data3, data4] = data
-    let [title1, title2, title3, title4] = title
+export const ChartLayout4 = ({ data, title }) => {
+    const [data1, data2, data3, data4] = data;
+    const [title1, title2, title3, title4] = title;
     return (
         <>
-            <div class='row'>
-                <div class='col'>
+            <div className='row'>
+                <div className='col'>
                     <DynamicComposedChart data={ data1 } title={title1}></DynamicComposedChart>
                 </div>
-                <div class='col'>
+                <div className='col'>
                     <DynamicComposedChart data={ data2} title = {title2}></DynamicComposedChart>
                 </div>
             </div>
-            <div class='row'>
-                <div class='col'>
+            <div className='row'>
+                <div className='col'>
                     <DynamicComposedChart data={ data3 } title={title3}></DynamicComposedChart>
                 </div>
-                <div class='col'>
+                <div className='col'>
                     <DynamicComposedChart data={ data4 } title={title4}></DynamicComposedChart>
                 </div>
             </div> 
         </>
-    )
+    );
 }
 
-const ChartLayout3 = ({ data, title }) => {
-    let [data1, data2, data3] = data
-    let [title1, title2, title3] = title
+export const ChartLayout3 = ({ data, title }) => {
+    const [data1, data2, data3] = data;
+    const [title1, title2, title3] = title;
     return (
         <>
-            <div class='row'>
-                <div class='col'>
+            <div className='row'>
+                <div className='col'>
                     <DynamicComposedChart data={ data1 } title={title1}></DynamicComposedChart>
                 </div>
             </div>
-            <div class='row'>
-                <div class='col'>
+            <div className='row'>
+                <div className='col'>
                     <DynamicComposedChart data={ data2 } title={title2}></DynamicComposedChart>
                 </div>
-                <div class='col'>
+                <div className='col'>
                     <DynamicComposedChart data={ data3 } title={title3}></DynamicComposedChart>
                 </div>
             </div> 
         </>
-    )
+    );
 }
 
-const ChartLayout2 = ({ data, title }) => {
-    let [data1, data2] = data
-    let [title1, title2] = title
+export const ChartLayout2 = ({ data, title }) => {
+    const [data1, data2] = data
+    const [title1, title2] = title
     return (
-        <div class='row'>
-           <div class='col'>
+        <div className='row'>
+           <div className='col'>
                 <DynamicComposedChart data={ data1 } title={ title1 }></DynamicComposedChart>
             </div>
-            <div class='col'>
+            <div className='col'>
                 <DynamicComposedChart data={ data2 } title = { title2 }></DynamicComposedChart>
             </div>
         </div>
-    )
+    );
 }
 
-const ChartLayout1 = ({ data, title }) => {
+export const ChartLayout1 = ({ data, title }) => {
     return (
-        <div class='row'>
-            <div class='col'>
+        <div className='row'>
+            <div className='col'>
                 <DynamicComposedChart data={ data[0] } title={ title[0] }></DynamicComposedChart>
             </div>
         </div>
-    )
+    );
 }
 
 const ChartTitleWrap = ({ title, children }) => {
     return (
-        <div class='col-flex'>
+        <div className='col-flex'>
             <h1>{title}</h1>
-            <div class='col-flex-child'>{ children }</div>
+            <div className='col-flex-child'>{ children }</div>
         </div>
-    )
+    );
 }
 
-const ChartLayout = ({ chartData }) => {
-    let [data, title] = chartData
+export const ChartLayout = ({ chartData }) => {
+    const [data, title] = chartData;
     switch(data.length) {
         case 1:
             return <ChartLayout1 data={data} title={title}></ChartLayout1>;
@@ -104,16 +104,16 @@ const ChartLayout = ({ chartData }) => {
             return <ChartLayout4 data={data} title={title}></ChartLayout4>;
         default:
             console.log("Invalid data");
-    }
+    };
 }
 
-const DynamicComposedChart = ({ data, title }) => {
-    let xDataKey = ""
-    let yDataKey = ""
+export const DynamicComposedChart = ({ data, title }) => {
+    let xDataKey = "";
+    let yDataKey = "";
     if ( data.length > 0 ) {
-        let keys = Object.keys(data[0])
-        xDataKey = keys[0]
-        yDataKey = keys[1]
+        const keys = Object.keys(data[0]);
+        xDataKey = keys[0];
+        yDataKey = keys[1];
     }
     return (
         <ChartTitleWrap title={title}>
@@ -127,7 +127,7 @@ const DynamicComposedChart = ({ data, title }) => {
                 </ComposedChart>
             </CustomResponsiveContainer>
         </ChartTitleWrap>
-    )
+    );
 }
 
 function CustomResponsiveContainer(props) {
@@ -146,7 +146,4 @@ function CustomResponsiveContainer(props) {
         </div>
       </div>
     );
-  }
-
-
-export { ChartLayout, ChartLayout4, ChartLayout2, ChartLayout1, DynamicComposedChart }
+}
