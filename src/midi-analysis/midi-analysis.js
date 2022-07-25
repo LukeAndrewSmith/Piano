@@ -1,6 +1,5 @@
-import { MidiMessage, MessageTypes } from 'midi-message-parser'
+import { MidiMessage, MessageTypes } from 'midi-message-parser';
 
-// TODO: setup a real module/package (maybe upload to npm)
 
 export function updatePlayedNotes( rawMessage, played ) {
     /*
@@ -11,42 +10,44 @@ export function updatePlayedNotes( rawMessage, played ) {
         Doesn't handle pedal press events
     */
 
-    const data = Array.from(rawMessage.data) // 'midi-message-parser' doesn't work with Uint8Array
+    const data = Array.from(rawMessage.data); // 'midi-message-parser' doesn't work with Uint8Array
 
-    // Silly workaround as 'midi-message-parser' sets velocity to 0 on note-off signal
-    let off = false
-    if ( data[0] == 128 ) {
-        off = true
-        data[0] = 144
-    }
-    const timestamp = rawMessage.timeStamp
-    const message = new MidiMessage(data, timestamp)
+    /*
+        Silly workaround:
+            Problem:
+                'midi-message-parser' sets velocity to 0 on note-off signal
+            Solution:
+                parse it as a note-on signal, then flip the message type to note off after
 
-    if ( off ) {
-        message.type = MessageTypes.NOTE_OFF
-    }
+     */
+    const isNoteOff = (data[0] == 128);       // 128 == note-off
+    data[0] = isNoteOff ? 144 : data[0];    // 144 == note-on
+    const message = new MidiMessage(data, rawMessage.timeStamp);
+    message.type = isNoteOff ? MessageTypes.NOTE_OFF : message.type;
 
     if ( message.type == MessageTypes.NOTE_ON ) {
-        let newNote = {
+        const newNote = {
             "note":         getAbsoluteNote(message.number),
             "startTime":    message.timestamp,
             "endTime":      null,
             "velocityOn":   message.value,
             "velocityOff":  null
-        }
-        played.push(newNote)
+        };
+        played.push(newNote);
     } else if ( message.type == MessageTypes.NOTE_OFF ) {
-        for (let i = played.length-1; i >= 0; i-- ) {
-            if ( played[i].note == getAbsoluteNote(message.number) && played[i].endTime == null ) {
-                played[i].endTime = message.timestamp
-                played[i].velocityOff = message.value
+        const absNote = getAbsoluteNote(message.number);
+        for (let i = played.length-1; i >= 0; i-- ) { // Find corresponding note to update note off data
+            if ( played[i].note == absNote && played[i].endTime == null ) {
+                played[i].endTime = message.timestamp;
+                played[i].velocityOff = message.value;
             }
         }
     } else {
-        console.log( "Unhandled message type" )
+        // Pedals etc.
+        console.log( "Unhandled message type" );
     }
     
-    return played
+    return played;
 }
 
 
@@ -118,7 +119,9 @@ export function extractExerciseAnalysisData( played ) {
 }
 
 
-const absoluteNotes = ["A0","A#0","B0",
+
+function getAbsoluteNote( number ) {
+    const absoluteNotes = ["A0","A#0","B0",
                 "C1","C#1","D1","D#1","E1","F1","F#1","G1","G#1","A1","A#1","B1",
                 "C2","C#2","D2","D#2","E2","F2","F#2","G2","G#2","A2","A#2","B2",
                 "C3","C#3","D3","D#3","E3","F3","F#3","G3","G#3","A3","A#3","B3",
@@ -126,14 +129,12 @@ const absoluteNotes = ["A0","A#0","B0",
                 "C5","C#5","D5","D#5","E5","F5","F#5","G5","G#5","A5","A#5","B5",
                 "C6","C#6","D6","D#6","E6","F6","F#6","G6","G#6","A6","A#6","B6",
                 "C7","C#7","D7","D#7","E7","F7","F#7","G7","G#7","A7","A#7","B7",
-                "C8"]
-
-function getAbsoluteNote( number ) {
-    return absoluteNotes[number]
+                "C8"];
+    return absoluteNotes[number];
 }
 
-const relativeNotes = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
 function getRelativeNote( number ) {
-    let index = (number-21) % 12
-    return relativeNotes[number]
+    const relativeNotes = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]
+    let index = (number-21) % 12;
+    return relativeNotes[index];
 }
