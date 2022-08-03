@@ -5,7 +5,6 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
-import Layout from "../components/layout";
 import Seo from "../components/seo";
 
 // TODO: Global variables are bad, but I failed to pass through state parameter in link so works for now
