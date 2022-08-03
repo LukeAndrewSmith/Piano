@@ -1,10 +1,10 @@
 import * as React from "react"
-import Header from "./header"
+import NavigationBar from "./navigation-bar"
 
 const FunctionLayout = ({ title, children }) => {
     return (
       <div className="wrapper">
-        <Header title={title}></Header>
+        <NavigationBar title={title}></NavigationBar>
         <main className="page-main">
             {children}
         </main>

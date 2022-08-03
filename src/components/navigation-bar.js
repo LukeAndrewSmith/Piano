@@ -7,7 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
-const Header = ({ title }) => {
+const NavigationBar = ({ title }) => {
     return (
         <Navbar bg="light" expand="lg" style={{ maxHeight: '64px' }} >
           <Container>
@@ -30,4 +30,4 @@ const Header = ({ title }) => {
       );
 }
 
-export default Header
+export default NavigationBar
