@@ -2,14 +2,12 @@ import * as React from "react";
 import { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
-import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 
 import FunctionLayout from "../components/function-layout";
-import Seo from "../components/seo";
 import { ChartLayout } from "../components/charts";
-import { updatePlayedNotes, updateExerciseAnalysisData, extractExerciseAnalysisData } from "../midi-analysis/midi-analysis";
-import { midiInput } from './index';
+// import { midiInput } from './index';
+import { MidiHandler } from '../midi-analysis/midi-handler'
 
 
 function getChartData(exerciseData, graphs) {
@@ -25,8 +23,7 @@ function getChartData(exerciseData, graphs) {
   return chartData;
 }
 
-const Exercise_Analysis = () => {
-  const [played, setPlayed] = useState([]);
+const Exercise_Analysis = (midiInput) => {
   const [graphs, setGraphs] = useState([true,true,true,true]);
   const initExerciseData = {
     "velocityOn":   [],
@@ -35,7 +32,28 @@ const Exercise_Analysis = () => {
     "durations":    [],
   };
   const [exerciseData, setExerciseData] = useState(initExerciseData);
-  const options = [{id:'0',name:'Velocity On',selected:true},{id:'1',name:'Velocity Off',selected:true},{id:'2',name:'Duration',selected:true},{id:'3',name:'Intervals',selected:true}];
+  const options = [
+    {id:'0',name:'Velocity On',selected:true},
+    {id:'1',name:'Velocity Off',selected:true},
+    {id:'2',name:'Duration',selected:true},
+    {id:'3',name:'Intervals',selected:true}
+  ];
+  
+  // ------------------------------------
+  // Setup Midi Handling
+  function exerciseDataCallBack(exerciseData) {
+    setExerciseData(exerciseData);
+  }
+
+  const midiHandlerSubscriptions = {
+    'exerciseData': {
+        'status': true, 
+        'callback': exerciseDataCallBack
+    },
+  }
+
+  // const midiHandler = MidiHandler(midiInput, midiHandlerSubscriptions);
+  // ------------------------------------
 
   const onSelectedOptionsChange = (e) => {
     const newGraphs = [...graphs];
@@ -44,39 +62,34 @@ const Exercise_Analysis = () => {
   }
 
   midiInput.onmidimessage = ( message ) => {
-    let playedNew = updatePlayedNotes(message,played);
-    // const exerciseDataNew = updateExerciseAnalysisData(exerciseData,playedNew) // TODO: this is not efficient, should simply update the existing array if slow
-    let exerciseDataNew = extractExerciseAnalysisData(playedNew) // TODO: this is not efficient, should simply update the existing array if slow
-    if ( exerciseDataNew.intervals.length > 1 ) {
-      for (let i=exerciseDataNew.intervals.length-1; i>=0; i--) {
-        if ( exerciseDataNew.intervals[i].value > 1000 ) { // TODO: let the user decide the interval
-          playedNew = updatePlayedNotes(message,[]);
-          // exerciseDataNew = updateExerciseAnalysisData(initExerciseData,playedNew)
-          exerciseDataNew = extractExerciseAnalysisData(playedNew);
-          break;
-        }
-      }
-    }
-    setExerciseData(exerciseDataNew);
-    setPlayed(playedNew);
+  //   let playedNew = updatePlayedNotes(message,played);
+  //   // const exerciseDataNew = updateExerciseAnalysisData(exerciseData,playedNew) // TODO: this is not efficient, should simply update the existing array if slow
+  //   let exerciseDataNew = extractExerciseAnalysisData(playedNew) // TODO: this is not efficient, should simply update the existing array if slow
+  
+  // TODO: handle the resetting after a given interval with the new MidiHandle Object
+  //   if ( exerciseDataNew.intervals.length > 1 ) {
+  //     for (let i=exerciseDataNew.intervals.length-1; i>=0; i--) {
+  //       if ( exerciseDataNew.intervals[i].value > 1000 ) { // TODO: let the user decide the interval
+  //         playedNew = updatePlayedNotes(message,[]);
+  //         // exerciseDataNew = updateExerciseAnalysisData(initExerciseData,playedNew)
+  //         exerciseDataNew = extractExerciseAnalysisData(playedNew);
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   setExerciseData(exerciseDataNew);
+  //   setPlayed(playedNew);
     console.log('Here');
   }
 
 
   return (
     <FunctionLayout title="Exercise Analysis">
-      {/* <Multiselect 
-        // data={multiSelectState} 
-        data={[{value:'0',label:'Velocity On',selected:true},{value:'1',label:'Velocity Off',selected:true},{value:'2',label:'Duration',selected:true},{value:'3',label:'Intervals',selected:true}]}
-        onChange={handleChange}  
-        multiple
-        buttonText={function(options, select) {return "Graphs"}} 
-      /> */}
       <DropdownButton
       alignright="true"
       title="Graphs"
       id="dropdown-menu-align-right"
-      // onSelect={handleSelect}
       >
         {options.map(options => (
           <Dropdown.ItemText key={options.id}>
